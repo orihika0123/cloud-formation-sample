@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Test cfn Template
+
+Resources:
+  cfnVpc:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: '192.168.0.0/16'
+      Tags:
+        - Key: 'Name'
+          Value: 'yano-test-vpc'
+  cfnSubnet:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      CidrBlock: '192.168.1.0/24'
+      MapPublicIpOnLaunch: true
+      Tags:
+         - Key: 'Name'
+           Value: 'yano-test-subnet'
+      VpcId: !Ref cfnVpc
+  cfnInternetGateway:
+    Type: 'AWS::EC2::InternetGateway'
+    Properties:
+      Tags:
+        - Key: 'Name'
+          Value: 'yano-test-internet-gateway'
+  cfnAttachGateWay:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Properties:
+      InternetGatewayId: !Ref cfnInternetGateway
+      VpcId: !Ref cfnVpc
+  cfnRouteTable:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref cfnVpc
+      Tags:
+        - Key: 'Name'
+          Value: 'yano-test-route-table'
+  cfnRoute:
+    Type: 'AWS::EC2::Route'
+    Properties:
+      DestinationCidrBlock: '0.0.0.0/0'
+      GatewayId: !Ref cfnInternetGateway
+      RouteTableId: !Ref cfnRouteTable
+  cfnSubnetRouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref cfnRouteTable
+      SubnetId: !Ref cfnSubnet
