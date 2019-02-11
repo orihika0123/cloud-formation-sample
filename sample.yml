@@ -47,3 +47,32 @@ Resources:
     Properties:
       RouteTableId: !Ref cfnRouteTable
       SubnetId: !Ref cfnSubnet
+  cfnEC2Instance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: 'ami-0964d004dc4ffafc1'
+      InstanceType: 't2.micro'
+      SubnetId: !Ref cfnSubnet
+      BlockDeviceMappings:
+        - DeviceName: '/dev/xvda'
+          Ebs:
+            VolumeType: 'gp2'
+            VolumeSize: '8'
+      Tags:
+        - Key: 'Name'
+          Value: 'yano-test-from-cloud-formation'
+      SecurityGroupIds:
+        - !Ref cfnSecurityGroup
+  cfnSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: 'yano-test-security-group'
+      VpcId: !Ref cfnVpc
+      Tags:
+        - Key: 'Name'
+          Value: 'yano-test-ssh-sg'
+      SecurityGroupIngress:
+        - IpProtocol: 'tcp'
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: '0.0.0.0/0'
